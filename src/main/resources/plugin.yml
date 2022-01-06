@@ -1,0 +1,12 @@
+name: LeafWeapons
+version: '${version}'
+main: mc.leaf.modules.weapons.LeafWeapons
+api-version: 1.18
+prefix: LeafWeapons
+depend: [ LeafCore ]
+authors: [ alexpado ]
+description: Add weapons to minecraft !
+website: https://github.com/alexpado
+commands:
+  weapons:
+    description: LeafWeapon command
