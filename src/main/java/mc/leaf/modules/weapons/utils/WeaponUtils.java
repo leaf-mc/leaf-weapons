@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -98,6 +99,7 @@ public class WeaponUtils {
             itemMeta.lore(Collections.emptyList());
         } else {
             if (refreshTier) {
+                Bukkit.getLogger().info(data.toString());
                 data.setTier(getNaturalWeaponTier(data));
             }
 

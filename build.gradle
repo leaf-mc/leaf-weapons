@@ -1,8 +1,9 @@
 import java.nio.charset.StandardCharsets
 
 plugins {
-    id 'java'
-    id 'com.github.ben-manes.versions' version '0.41.0'
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.github.ben-manes.versions' version '0.42.0'
     id 'org.ajoberstar.reckon' version '0.13.1'
 }
 
@@ -15,6 +16,7 @@ reckon {
 
 group = pluginGroup
 
+def targetJavaVersion = 17
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
@@ -26,23 +28,40 @@ repositories {
     mavenCentral()
     maven {
         name = 'papermc-repo'
-        url = 'https://papermc.io/repo/repository/maven-public/'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
     }
     mavenLocal()
 }
 
 dependencies {
-    compileOnly group: 'io.papermc.paper', name: 'paper-api', version: '1.18.1-R0.1-SNAPSHOT'
-    implementation group: 'mc.leaf', name: 'leaf-core', version: '0.1.0-beta.1'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.9.0'
+    compileOnly group: 'io.papermc.paper', name: 'paper-api', version: '1.19.2-R0.1-SNAPSHOT'
     implementation group: 'org.jetbrains', name: 'annotations', version: '23.0.0'
+    implementation group: 'mc.leaf', name: 'leaf-core', version: '1.0.0-beta.1.17+20220904T165143Z'
 }
 
-processResources {
-    def props = [version: version.toString()]
-    inputs.properties props
-    filteringCharset generalCharset
-    filesMatching('plugin.yml') {
-        expand props
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+tasks.withType(Jar) {
+    if (project.properties.containsKey("workspace")) {
+        destinationDir = file("$rootDir/.papermc/plugins")
     }
 }
 
@@ -50,11 +69,11 @@ compileJava {
     options.compilerArgs << '-parameters'
 }
 
-jar {
-    destinationDirectory = file("build/plugin")
-    archiveFileName = pluginName + ".jar"
-}
-
-test {
-    useJUnitPlatform()
+processResources {
+    def props = [version: '1.0.0-SNAPSHOT']
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
 }

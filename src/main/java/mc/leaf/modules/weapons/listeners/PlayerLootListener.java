@@ -6,6 +6,7 @@ import mc.leaf.modules.weapons.LeafWeaponsModule;
 import mc.leaf.modules.weapons.WeaponGenerator;
 import mc.leaf.modules.weapons.data.entities.Ammunition;
 import mc.leaf.modules.weapons.data.entities.Weapon;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,6 +40,7 @@ public class PlayerLootListener extends LeafListener {
     }
 
     @Override
+    @EventHandler
     public void onLootGenerate(LootGenerateEvent event) {
 
         double weaponPull = new Random().nextDouble();

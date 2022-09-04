@@ -5,6 +5,7 @@ import mc.leaf.modules.weapons.lib.ShotTarget;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.TNTPrimed;
@@ -32,46 +33,52 @@ public class BulletEntity {
 
     public void tick() {
 
-        bulletLocation.getWorld().playSound(bulletLocation, Sound.ENTITY_CREEPER_HURT, 2, 0);
+        this.bulletLocation.getWorld().playSound(this.bulletLocation, Sound.ENTITY_CREEPER_HURT, 2, 0);
 
         Vector   movementDirection = this.target.getTargetLocation().clone().subtract(this.bulletLocation).toVector()
                 .normalize().multiply(0.4);
-        Location newLocation       = bulletLocation.add(movementDirection);
-        this.lifetime -= bulletLocation.distance(newLocation);
-        bulletLocation = newLocation;
+        Location newLocation       = this.bulletLocation.add(movementDirection);
+        this.lifetime -= this.bulletLocation.distance(newLocation);
+        this.bulletLocation = newLocation;
 
-        if (bulletLocation.distance(event.getShotOrigin()) > 2) {
+        if (this.bulletLocation.distance(this.event.getShotOrigin()) > 2) {
             Particle.DustOptions dust = new Particle.DustOptions(this.event.getWeapon().getBulletTrailColor(), 3);
-            bulletLocation.getWorld().spawnParticle(Particle.REDSTONE, bulletLocation, 1, 0, 0, 0, 0, dust);
+            this.bulletLocation.getWorld().spawnParticle(Particle.REDSTONE, this.bulletLocation, 1, 0, 0, 0, 0, dust);
         }
 
 
-        Optional<LivingEntity> optionalEntity = bulletLocation.getNearbyEntities(1, 1, 1) // Retrieve entities around the actual location
+        Optional<LivingEntity> optionalEntity = this.bulletLocation.getNearbyEntities(1, 1, 1) // Retrieve entities around the actual location
                 .stream() // Make this Entity list a stream of Entity
                 .filter(entity -> entity instanceof LivingEntity)
                 .map(entity -> (LivingEntity) entity)
                 .filter(livingEntity -> !livingEntity.getUniqueId().equals(this.event.getShooter().getUniqueId()))
-                .filter(livingEntity -> livingEntity.getBoundingBox().contains(bulletLocation.toVector()))
+                .filter(livingEntity -> livingEntity.getBoundingBox().contains(this.bulletLocation.toVector()))
                 .filter(livingEntity -> !livingEntity.isDead())
                 .findFirst();
 
-        Block block = bulletLocation.getBlock();
+        Block block = this.bulletLocation.getBlock();
 
         if (optionalEntity.isPresent()) {
             this.makeBulletGoKaboom();
-        } else if (!block.isPassable() && block.getBoundingBox().contains(bulletLocation.toVector())) {
+        } else if (!block.isPassable() && block.getBoundingBox().contains(this.bulletLocation.toVector())) {
             this.makeBulletGoKaboom();
-        } else if (lifetime == 0 || bulletLocation.distance(this.target.getTargetLocation()) < 1) {
+        } else if (this.lifetime == 0 || this.bulletLocation.distance(this.target.getTargetLocation()) < 1) {
             this.makeBulletGoKaboom();
         }
     }
 
     private void makeBulletGoKaboom() {
 
-        TNTPrimed tnt = bulletLocation.getWorld().spawn(bulletLocation, TNTPrimed.class);
-        tnt.setYield(this.event.getWeapon().getBulletPower());
+        TNTPrimed tnt = this.bulletLocation.getWorld().spawn(this.bulletLocation, TNTPrimed.class);
+        Integer   bulletPower = this.event.getWeapon().getBulletPower();
+        int       delta = bulletPower / 6;
+        tnt.setYield(bulletPower);
         tnt.setFuseTicks(0);
-        lifetime = 0;
+        this.lifetime = 0;
+
+        World world = this.bulletLocation.getWorld();
+        world.spawnParticle(Particle.EXPLOSION_NORMAL, this.bulletLocation, bulletPower * 10, delta, delta, delta);
+        world.spawnParticle(Particle.EXPLOSION_LARGE, this.bulletLocation, bulletPower * 10, delta, delta, delta);
     }
 
     public boolean isValid() {

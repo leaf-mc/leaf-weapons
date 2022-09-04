@@ -28,7 +28,7 @@ public class Weapon {
 
     public Integer getTier() {
 
-        return tier;
+        return this.tier;
     }
 
     public void setTier(Integer tier) {
@@ -38,7 +38,7 @@ public class Weapon {
 
     public Integer getReach() {
 
-        return reach;
+        return this.reach;
     }
 
     public void setReach(Integer reach) {
@@ -48,7 +48,7 @@ public class Weapon {
 
     public Integer getAmmo() {
 
-        return ammo;
+        return this.ammo;
     }
 
     public void setAmmo(Integer ammo) {
@@ -58,7 +58,7 @@ public class Weapon {
 
     public Integer getMaxAmmo() {
 
-        return maxAmmo;
+        return this.maxAmmo;
     }
 
     public void setMaxAmmo(Integer maxAmmo) {
@@ -68,7 +68,7 @@ public class Weapon {
 
     public String getBulletType() {
 
-        return bulletType;
+        return this.bulletType;
     }
 
     public void setBulletType(String bulletType) {
@@ -78,7 +78,7 @@ public class Weapon {
 
     public Integer getBulletPower() {
 
-        return bulletPower;
+        return this.bulletPower;
     }
 
     public void setBulletPower(Integer bulletPower) {
@@ -88,7 +88,7 @@ public class Weapon {
 
     public Color getBulletTrailColor() {
 
-        return bulletTrailColor;
+        return this.bulletTrailColor;
     }
 
     public void setBulletTrailColor(Color bulletTrailColor) {
@@ -98,7 +98,7 @@ public class Weapon {
 
     public String getSoundCategory() {
 
-        return soundCategory;
+        return this.soundCategory;
     }
 
     public void setSoundCategory(String soundCategory) {
@@ -108,7 +108,7 @@ public class Weapon {
 
     public Long getNextShot() {
 
-        return nextShot;
+        return this.nextShot;
     }
 
     public void setNextShot(Long nextShot) {
@@ -118,7 +118,7 @@ public class Weapon {
 
     public Long getTimeShot() {
 
-        return timeShot;
+        return this.timeShot;
     }
 
     public void setTimeShot(Long timeShot) {
@@ -128,7 +128,7 @@ public class Weapon {
 
     public Long getTimeReload() {
 
-        return timeReload;
+        return this.timeReload;
     }
 
     public void setTimeReload(Long timeReload) {
@@ -193,6 +193,24 @@ public class Weapon {
         stack.setAmount(1);
         WeaponUtils.saveWeapon(module, stack, this, false);
         return stack;
+    }
+
+    @Override
+    public String toString() {
+
+        return "Weapon{" +
+                "tier=" + this.tier +
+                ", reach=" + this.reach +
+                ", ammo=" + this.ammo +
+                ", maxAmmo=" + this.maxAmmo +
+                ", bulletType='" + this.bulletType + '\'' +
+                ", bulletPower=" + this.bulletPower +
+                ", bulletTrailColor=" + this.bulletTrailColor +
+                ", soundCategory='" + this.soundCategory + '\'' +
+                ", nextShot=" + this.nextShot +
+                ", timeShot=" + this.timeShot +
+                ", timeReload=" + this.timeReload +
+                '}';
     }
 
 }

@@ -1,7 +1,9 @@
 package mc.leaf.modules.weapons;
 
+import mc.leaf.core.api.command.PluginCommandImpl;
 import mc.leaf.core.interfaces.ILeafCore;
 import mc.leaf.core.interfaces.ILeafModule;
+import mc.leaf.core.interfaces.impl.LeafModule;
 import mc.leaf.modules.weapons.commands.WeaponCommand;
 import mc.leaf.modules.weapons.listeners.PlayerLootListener;
 import mc.leaf.modules.weapons.listeners.PlayerShootListener;
@@ -10,18 +12,14 @@ import mc.leaf.modules.weapons.managers.SneakyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
 
-public class LeafWeaponsModule implements ILeafModule {
-
-    private final JavaPlugin plugin;
-    private final ILeafCore  core;
-    private       boolean    enabled = false;
+public class LeafWeaponsModule extends LeafModule {
 
     private NamespacedKey weaponNamespace;
     private NamespacedKey licenceNamespace;
@@ -32,19 +30,19 @@ public class LeafWeaponsModule implements ILeafModule {
 
     public LeafWeaponsModule(JavaPlugin plugin, ILeafCore core) {
 
-        this.plugin = plugin;
-        this.core   = core;
-        this.core.registerModule(this);
-        this.core.registerDynamicOptions("weaponType", Arrays.asList("normal", "explosive"));
+        super(core, plugin);
+
+        this.getCore().registerModule(this);
+        this.getCore().registerDynamicOptions("weaponType", Arrays.asList("normal", "explosive"));
     }
 
     @Override
     public void onEnable() {
 
         this.getPlugin().getLogger().info("Registering namespaced keys...");
-        this.weaponNamespace     = new NamespacedKey(this.plugin, "weapon");
-        this.licenceNamespace    = new NamespacedKey(this.plugin, "licence");
-        this.ammunitionNamespace = new NamespacedKey(this.plugin, "ammunition");
+        this.weaponNamespace     = new NamespacedKey(this.getPlugin(), "weapon");
+        this.licenceNamespace    = new NamespacedKey(this.getPlugin(), "licence");
+        this.ammunitionNamespace = new NamespacedKey(this.getPlugin(), "ammunition");
 
         this.getPlugin().getLogger().info("Registering managers...");
         this.bulletManager = new BulletManager(this);
@@ -52,18 +50,8 @@ public class LeafWeaponsModule implements ILeafModule {
         this.bulletManager.start();
         this.sneakyManager.start();
 
-        this.getPlugin().getLogger().info("Registering listeners...");
-        this.core.getEventBridge().register(this, new PlayerLootListener(this));
-        this.core.getEventBridge().register(this, new PlayerShootListener(this));
-
-        this.getPlugin().getLogger().info("Registering command...");
-        Optional.ofNullable(Bukkit.getPluginCommand("weapons"))
-                .ifPresent(command -> command.setExecutor(new WeaponCommand(this)));
-
         this.getPlugin().getLogger().info("Registering recipes...");
         this.createRecipes();
-
-        this.enabled = true;
         this.getPlugin().getLogger().info("LeafWeapon has been enabled.");
     }
 
@@ -84,15 +72,9 @@ public class LeafWeaponsModule implements ILeafModule {
         this.bulletManager       = null;
         this.sneakyManager       = null;
 
-        this.enabled = false;
         this.getPlugin().getLogger().info("LeafWeapon has been disabled.");
     }
 
-    @Override
-    public ILeafCore getCore() {
-
-        return this.core;
-    }
 
     @Override
     public String getName() {
@@ -101,15 +83,17 @@ public class LeafWeaponsModule implements ILeafModule {
     }
 
     @Override
-    public boolean isEnabled() {
+    public List<Listener> getListeners() {
 
-        return this.enabled;
+        return Arrays.asList(new PlayerLootListener(this), new PlayerShootListener(this));
     }
 
     @Override
-    public JavaPlugin getPlugin() {
+    public Map<String, PluginCommandImpl> getCommands() {
 
-        return this.plugin;
+        return new HashMap<>() {{
+            this.put("weapons", new WeaponCommand(LeafWeaponsModule.this));
+        }};
     }
 
     public NamespacedKey getAmmunitionNamespace() {
