@@ -41,7 +41,7 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.9.0'
     compileOnly group: 'io.papermc.paper', name: 'paper-api', version: '1.19.2-R0.1-SNAPSHOT'
     implementation group: 'org.jetbrains', name: 'annotations', version: '23.0.0'
-    implementation group: 'mc.leaf', name: 'leaf-core', version: '1.0.0-beta.1.17+20220904T165143Z'
+    implementation group: 'mc.leaf', name: 'leaf-core', version: '0.1.0-beta.4'
 }
 
 java {

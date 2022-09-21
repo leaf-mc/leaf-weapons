@@ -1,8 +1,8 @@
-name: LeafWeapons
+name: LeafArmory
 version: '${version}'
-main: mc.leaf.modules.weapons.LeafWeapons
+main: mc.leaf.modules.armory.LeafWeapons
 api-version: 1.18
-prefix: LeafWeapons
+prefix: LeafArmory
 depend: [ LeafCore ]
 authors: [ alexpado ]
 description: Add weapons to minecraft !
